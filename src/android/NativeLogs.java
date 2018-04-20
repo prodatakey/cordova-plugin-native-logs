@@ -36,7 +36,6 @@ public class NativeLogs extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
 
         super.initialize(cordova, webView);
-        this.clearLog();
     }
 
     private  String getLogsFromLogCat(int _nbLines) {
