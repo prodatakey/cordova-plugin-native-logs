@@ -20,59 +20,63 @@
 
 - (void)getLog:(CDVInvokedUrlCommand*)command {
 
-    
-    NSString* callbackId = command.callbackId;
-    if (command.arguments.count != 2)
-    {
-        NSString* error = @"missing arguments in getLog";
-        NSLog(@"CDVNativeLogs: %@",error);
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
-        return ;
-    }
-    
-    int nbLines = 1000;  // maxline
-    BOOL bClipboard = false;
-    id value = [command argumentAtIndex:0];
-    if ([value isKindOfClass:[NSNumber class]]) {
-        nbLines = [value intValue];
-    }
-    
-    value = [command argumentAtIndex:1];
-    if ([value isKindOfClass:[NSNumber class]]) {
-        bClipboard = [value boolValue];
-    }
-    
+    [self.commandDelegate runInBackground:^{
+      NSString* callbackId = command.callbackId;
+      if (command.arguments.count != 2)
+      {
+          NSString* error = @"missing arguments in getLog";
+          NSLog(@"CDVNativeLogs: %@",error);
+          CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error];
+          [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+          return ;
+      }
 
-    NSString* pathForLog = [self getPath];
-    NSString *stringContent = [NSString stringWithContentsOfFile:pathForLog encoding:NSUTF8StringEncoding error:nil];
+      int nbLines = 1000;  // maxline
+      BOOL bClipboard = false;
+      id value = [command argumentAtIndex:0];
+      if ([value isKindOfClass:[NSNumber class]]) {
+          nbLines = [value intValue];
+      }
 
-    NSString* log = @"";
-    NSArray *brokenByLines=[stringContent componentsSeparatedByString:@"\n"];
-    
+      value = [command argumentAtIndex:1];
+      if ([value isKindOfClass:[NSNumber class]]) {
+          bClipboard = [value boolValue];
+      }
 
-    NSRange endRange = NSMakeRange(brokenByLines.count >= nbLines ?
-                                   brokenByLines.count - nbLines
-                                : 0, MIN(brokenByLines.count, nbLines));
-    
-    for(id line in [brokenByLines subarrayWithRange:endRange])
-    {
-        if ([line length]==0)
-            continue ;
-      
-        log = [log stringByAppendingString:line];
-        log = [log stringByAppendingString:@"\n"];    
-    }
-    
-    if (bClipboard) 
-    {
-        UIPasteboard *pb = [UIPasteboard generalPasteboard];
-        [pb setString:log];
-    }
 
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:log];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+      NSString* pathForLog = [self getPath];
+      NSString *stringContent = [NSString stringWithContentsOfFile:pathForLog encoding:NSUTF8StringEncoding error:nil];
+
+      [[NSFileManager defaultManager] removeItemAtPath:pathForLog error:nil];
+      freopen([pathForLog cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
+
+      NSString* log = @"";
+      NSArray *brokenByLines=[stringContent componentsSeparatedByString:@"\n"];
+
+
+      NSRange endRange = NSMakeRange(brokenByLines.count >= nbLines ?
+                                     brokenByLines.count - nbLines
+                                  : 0, MIN(brokenByLines.count, nbLines));
+
+      for(id line in [brokenByLines subarrayWithRange:endRange])
+      {
+          if ([line length]==0)
+              continue ;
+
+          log = [log stringByAppendingString:line];
+          log = [log stringByAppendingString:@"\n"];
+      }
+
+      if (bClipboard)
+      {
+          UIPasteboard *pb = [UIPasteboard generalPasteboard];
+          [pb setString:log];
+      }
+
+      CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:log];
+      [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    }];
 }
-  
+
 
 @end
