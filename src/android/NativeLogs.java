@@ -44,7 +44,7 @@ public class NativeLogs extends CordovaPlugin {
         LinkedList<String> logs = new LinkedList<String>();
 
         try {
-            Process process = Runtime.getRuntime().exec("logcat -d");
+            Process process = Runtime.getRuntime().exec("logcat -d -v threadtime");
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
 
@@ -52,7 +52,6 @@ public class NativeLogs extends CordovaPlugin {
             while (( line = bufferedReader.readLine()) != null) {
                 logs.add(line);
             }
-            this.clearLog();
         } catch (IOException e) {
             e.printStackTrace();
         }
