@@ -69,12 +69,12 @@ public class NativeLogs extends CordovaPlugin {
         return log;
     }
 
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext)
+    public boolean execute(String action, JSONArray args, final CallbackContext callbackContext)
             throws JSONException {
 
         if (action.equals("getLog")) {
-            int nbLines = args.getInt(0);
-            boolean bCopyToClipBoard = args.getBoolean(1);
+            final int nbLines = args.getInt(0);
+            final boolean bCopyToClipBoard = args.getBoolean(1);
 
             cordova.getThreadPool().execute(new Runnable() {
               public void run() {
