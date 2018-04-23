@@ -73,20 +73,22 @@ public class NativeLogs extends CordovaPlugin {
             throws JSONException {
 
         if (action.equals("getLog")) {
+            cordova.getThreadPool().execute(new Runnable() {
+              public void run() {
+                int nbLines = args.getInt(0);
+                boolean bCopyToClipBoard = args.getBoolean(1);
 
-            int nbLines = args.getInt(0);
-            boolean bCopyToClipBoard = args.getBoolean(1);
+                String log = getLogsFromLogCat(nbLines);
 
-            String log = getLogsFromLogCat(nbLines);
-
-            if (bCopyToClipBoard) {
-                ClipboardManager clipboard = (ClipboardManager) cordova.getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("logcat", log);
-                clipboard.setPrimaryClip(clip);
-            }
-            callbackContext.success(log);
+                if (bCopyToClipBoard) {
+                    ClipboardManager clipboard = (ClipboardManager) cordova.getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("logcat", log);
+                    clipboard.setPrimaryClip(clip);
+                }
+                callbackContext.success(log);
+              }
+            });
             return true;
-
         }
         else
             return false;
