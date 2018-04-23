@@ -52,6 +52,7 @@ public class NativeLogs extends CordovaPlugin {
             while (( line = bufferedReader.readLine()) != null) {
                 logs.add(line);
             }
+            this.clearLog();
         } catch (IOException e) {
             e.printStackTrace();
         }
