@@ -12,9 +12,9 @@
 }
 
 - (NSString*) getPath {
-    NSArray *allPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [allPaths objectAtIndex:0];
-    NSString *pathForLog = [documentsDirectory stringByAppendingPathComponent:@"cordova-plugin-nativelogs.txt"];
+    NSArray *allPaths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *cacheDirectory = [allPaths objectAtIndex:0];
+    NSString *pathForLog = [cacheDirectory stringByAppendingPathComponent:@"cordova-plugin-nativelogs.txt"];
     return pathForLog;
 }
 
