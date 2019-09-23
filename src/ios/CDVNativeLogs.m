@@ -7,7 +7,6 @@
 - (void)pluginInitialize
 {
     NSString* pathForLog = [self getPath];
-    [[NSFileManager defaultManager] removeItemAtPath:pathForLog error:nil];
     freopen([pathForLog cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
 }
 
@@ -47,8 +46,8 @@
       NSString* pathForLog = [self getPath];
       NSString *stringContent = [NSString stringWithContentsOfFile:pathForLog encoding:NSUTF8StringEncoding error:nil];
 
-      [[NSFileManager defaultManager] removeItemAtPath:pathForLog error:nil];
-      freopen([pathForLog cStringUsingEncoding:NSASCIIStringEncoding],"a+",stderr);
+	  // Reopen the stderr logfile while truncating it
+      freopen([pathForLog cStringUsingEncoding:NSASCIIStringEncoding],"w+",stderr);
 
       NSString* log = @"";
       NSArray *brokenByLines=[stringContent componentsSeparatedByString:@"\n"];
